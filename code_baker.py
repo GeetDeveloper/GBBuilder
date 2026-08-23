@@ -47,7 +47,45 @@ except FileNotFoundError:
     raise SystemExit
           
 if do_assembling:
+          rom_adress = 0
           for i in range(len(asm_code_lines)):
+              #First pass
+              #awuip4zgsuivreilsyhçsgyuoidhjf
+              current_line = asm_code_lines[i]
+              if current_line.endswith(":"):
+                  nametags[current_line.replace(":","")] = rom_adress
+              else:
+                  hex_start = -3
+                  hex_end = -4
+                  for asdfghjhgfds in range(len(current_line)):
+                      if "$" in current_line[asdfghjhgfds] and hex_start < 0:
+                          hex_start = asdfghjhgfds + 1
+                      elif "$" in current_line[asdfghjhgfds] and hex_start >= 0:
+                          print("ERROR: extra hex value on line " + str(i + 1) + ":")
+                          print(current_line)
+                          print("sorry, you can't add two hex values in one line! it is what it is.")
+                          print()
+                          print("Program siezed")
+                          raise SystemExit
+                      elif current_line[asdfghjhgfds] not in "0123456789ABCDEFabcdef" and hex_start >= 0 and hex_end < 0:
+                           hex_end = asdfghjhgfds
+                  if hex_start >= 0:
+                      if hex_end < 0: #this should set the end of the hex to the last value of current_line if there is no letter after the last letter of the end of the hex value. i pray to god this works
+                          hex_end = len(current_line)
+                      hex_value = current_line[hex_start:hex_end]
+                      instruction = current_line.replace(hex_value, "")
+                  else:
+                      instruction = current_line
+                  if not instruction in dictionary_instructions:
+                       print("ERROR: invalid instruction on line " + str(i + 1) + ":")
+                       print(current_line)
+                       print("This instruction is not valid on standard SM83 assembly. maybe you did a typo?")
+                       print()
+                       print("Program siezed")
+                   else:
+                       rom_adress = rom_adress + dictionary_instructions[instruction][2]            
+          for i in range(len(asm_code_lines)):
+              #Second pass
               current_line = asm_code_lines[i]
               hex_value_position = ""
               if not current_line == "":
