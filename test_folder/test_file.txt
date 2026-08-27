@@ -1,4 +1,0 @@
-ld a, $10
-ld ($DEAD), a
-ld a, $20
-ld ($BEEF), a
